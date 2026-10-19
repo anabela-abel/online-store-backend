@@ -13,9 +13,7 @@ const PORT = process.env.PORT || 5001;
 app.use(
   cors({
     origin: process.env.FRONTEND_URL
-      ? process.env.FRONTEND_URL.split(",").map(
-          (url) => url.trim()
-        )
+      ? process.env.FRONTEND_URL.split(",").map((url) => url.trim())
       : true
   })
 );
@@ -37,12 +35,21 @@ app.use((req, res) => {
   });
 });
 
-const startServer = async () => {
-  await connectDB();
+if (require.main === module) {
+  const startServer = async () => {
+    try {
+      await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-  });
-};
+      app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+      });
+    } catch (error) {
+      console.error("Failed to start server:", error);
+      process.exit(1);
+    }
+  };
 
-startServer();
+  startServer();
+}
+
+module.exports = app;
